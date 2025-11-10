@@ -9,13 +9,13 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --glow: 0 0 12px rgba(138, 43, 226, 0.7);
       --neon: #8A2BE2;
-      --bg-dark: #0a0a1a;
+      --glow: 0 0 12px rgba(138, 43, 226, 0.7);
       --card-bg: rgba(15, 20, 45, 0.75);
+      --bg: #0a0a1a;
     }
     body {
-      background: var(--bg-dark);
+      background: var(--bg);
       color: #e0e8ff;
       font-family: 'Quicksand', sans-serif;
       overflow: hidden;
@@ -23,6 +23,7 @@
       position: relative;
     }
     canvas { position: fixed; top: 0; left: 0; z-index: -2; }
+    /* === LOGIN SCREEN === */
     #loginScreen {
       position: relative;
       z-index: 10;
@@ -31,23 +32,22 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      padding: 0 15px;
+      padding: 0 20px;
       text-align: center;
     }
     .typing {
       font-family: 'Pacifico', cursive;
-      font-size: 2.1rem;
-      font-weight: 700;
+      font-size: 2.0rem;
       background: linear-gradient(90deg, #a0e7ff, #ffffff, #ffd700);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
-      text-shadow: 0 0 14px rgba(160, 231, 255, 0.5);
-      margin-bottom: 8px;
+      text-shadow: 0 0 12px rgba(160, 231, 255, 0.5);
+      margin-bottom: 10px;
       white-space: nowrap;
       overflow: hidden;
       border-right: 2px solid #a0e7ff;
-      animation: typing 4.5s steps(32), blink 0.8s step-end infinite;
+      animation: typing 4s steps(30), blink 0.8s step-end infinite;
     }
     @keyframes typing {
       0% { width: 0; }
@@ -57,14 +57,14 @@
       50% { border-color: transparent; }
     }
     .subtitle {
-      font-size: 1.05rem;
+      font-size: 1.0rem;
       max-width: 480px;
       margin: 0 auto 28px;
       color: #aaa;
       line-height: 1.6;
     }
     .login-box {
-      background: rgba(12, 18, 40, 0.65);
+      background: rgba(12, 18, 40, 0.7);
       border-radius: 22px;
       padding: 26px;
       width: 100%;
@@ -76,18 +76,18 @@
       z-index: 2;
     }
     .input-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       text-align: left;
     }
     .input-group label {
       display: block;
-      margin-bottom: 7px;
+      margin-bottom: 6px;
       font-weight: 600;
       color: #d0e1ff;
     }
     .input-group input {
       width: 100%;
-      padding: 13px 16px;
+      padding: 12px 15px;
       border-radius: 12px;
       border: 1px solid #3a3a5a;
       background: rgba(20, 25, 55, 0.6);
@@ -100,22 +100,27 @@
       border-color: var(--neon);
       box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
     }
-    .btn-login {
+    .btn-login, .btn-logout {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       border: none;
       border-radius: 12px;
-      background: linear-gradient(90deg, #3a1a7d, #5c26b0, #8A2BE2);
       color: white;
       font-weight: 700;
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       cursor: pointer;
       transition: all 0.3s ease;
+    }
+    .btn-login {
+      background: linear-gradient(90deg, #3a1a7d, #5c26b0, #8A2BE2);
       box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(138, 43, 226, 0.3);
     }
     .btn-login:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.5), 0 0 14px rgba(138, 43, 226, 0.5);
+    }
+    .btn-logout {
+      background: linear-gradient(90deg, #c62828, #d32f2f);
     }
     .feedback {
       margin-top: 16px;
@@ -134,44 +139,7 @@
       color: #a0ffcc;
       border: 1px solid #225522;
     }
-    .decoration {
-      position: absolute;
-      z-index: 0;
-    }
-    .deco-1 {
-      top: 15%; left: 5%; width: 60px; height: 60px;
-      border: 2px solid #8A2BE2;
-      border-radius: 50%;
-      box-shadow: 0 0 20px #8A2BE2;
-      animation: pulse 3s infinite;
-    }
-    .deco-2 {
-      bottom: 20%; right: 8%; width: 40px; height: 40px;
-      background: rgba(255, 215, 0, 0.2);
-      border-radius: 50%;
-      box-shadow: 0 0 16px #ffd700;
-      animation: float 5s ease-in-out infinite;
-    }
-    .deco-3 {
-      top: 40%; right: 12%; width: 20px; height: 20px;
-      background: #a0e7ff;
-      border-radius: 50%;
-      box-shadow: 0 0 12px #a0e7ff;
-      animation: blink 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.6; }
-      50% { transform: scale(1.2); opacity: 0.3; }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-12px); }
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 1; }
-    }
-
+    /* === MAIN CONTENT === */
     #mainContent {
       display: none;
       opacity: 0;
@@ -181,15 +149,21 @@
     }
     .header {
       text-align: center;
-      padding: 20px 15px 15px;
+      padding: 18px 15px 10px;
+      position: relative;
+    }
+    .logout-btn-container {
+      position: absolute;
+      top: 15px;
+      right: 20px;
     }
     #topBanner {
       width: 100%;
-      max-width: 800px;
-      margin: 0 auto 18px;
+      max-width: 780px;
+      margin: 0 auto 16px;
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      box-shadow: 0 5px 18px rgba(0,0,0,0.5);
     }
     #topBanner img {
       width: 100%;
@@ -197,39 +171,40 @@
     }
     .credits {
       font-family: 'Pacifico', cursive;
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       color: #ffd700;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
       margin-top: 6px;
     }
     .socials {
       display: flex;
       justify-content: center;
       gap: 12px;
-      margin: 14px 0;
+      margin: 12px 0;
       flex-wrap: wrap;
     }
     .social-link {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1rem;
+      font-size: 0.95rem;
       text-decoration: none;
       transition: all 0.3s;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
     }
-    .social-link:hover { transform: translateY(-3px) scale(1.08); }
-
+    .social-link:hover {
+      transform: translateY(-2px) scale(1.08);
+    }
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 22px;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 20px;
       padding: 0 20px 40px;
-      max-width: 1200px;
+      max-width: 1100px;
       margin: 0 auto;
     }
     .project-card {
@@ -239,41 +214,55 @@
       backdrop-filter: blur(8px);
       border: 1px solid rgba(100, 150, 255, 0.15);
       transition: all 0.3s ease;
+      position: relative;
     }
     .project-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
     }
+    .project-number {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(138, 43, 226, 0.25);
+      color: #a0e7ff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 2;
+      box-shadow: 0 0 8px rgba(138, 43, 226, 0.3);
+    }
     .project-img {
       width: 100%;
-      height: 150px;
+      height: 145px;
       object-fit: cover;
     }
     .project-info {
-      padding: 16px;
+      padding: 15px;
     }
     .project-name {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       color: #e0f0ff;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 700;
     }
     .links {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 10px;
     }
     .link-btn {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px;
+      gap: 8px;
+      padding: 9px;
       border-radius: 10px;
       font-weight: 600;
       text-decoration: none;
       transition: all 0.25s;
-      font-size: 0.93rem;
+      font-size: 0.9rem;
     }
     .link-github {
       background: linear-gradient(to right, #222, #333);
@@ -284,10 +273,11 @@
       color: white;
     }
     @media (max-width: 500px) {
-      .typing { font-size: 1.7rem; }
+      .typing { font-size: 1.6rem; }
       .login-box { padding: 22px; max-width: 320px; }
       .projects-grid { grid-template-columns: 1fr; }
-      .project-img { height: 130px; }
+      .project-img { height: 125px; }
+      .project-number { font-size: 0.85rem; padding: 3px 8px; }
     }
   </style>
 </head>
@@ -295,31 +285,30 @@
 
   <canvas id="particles"></canvas>
 
-  <!-- Decoraciones estáticas -->
-  <div class="decoration deco-1"></div>
-  <div class="decoration deco-2"></div>
-  <div class="decoration deco-3"></div>
-
+  <!-- Pantalla de Login -->
   <div id="loginScreen">
-    <div class="typing">✯Códigos Para descargar✯</div>
-    <p class="subtitle">Acceso exclusivo para administradores. Verificación de identidad requerida para gestionar repositorios y demos oficiales.</p>
-    
+    <div class="typing">✯Códigos HTML✯</div>
+    <p class="subtitle">Acceso restringido a administradores. Solo usuarios autorizados pueden gestionar repositorios y demos.</p>
     <div class="login-box">
       <div class="input-group">
         <label for="phone"><i class="fas fa-mobile-alt"></i> Celular (Perú)</label>
-        <input type="tel" id="phone" placeholder="Ejm: 987654321" autocomplete="off">
+        <input type="tel" id="phone" placeholder="Ejem:987654321" autocomplete="off">
       </div>
       <div class="input-group">
         <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
         <input type="password" id="password" placeholder="••••••••" autocomplete="off">
       </div>
-      <button class="btn-login" onclick="login()">🔐 Iniciar Sesión</button>
+      <button class="btn-login" onclick="handleLogin()">🔐 Iniciar Sesión</button>
       <div id="feedback" class="feedback"></div>
     </div>
   </div>
 
+  <!-- Contenido Principal -->
   <div id="mainContent">
     <div class="header">
+      <div class="logout-btn-container">
+        <button class="btn-logout" onclick="logout()">🚪 Cerrar Sesión</button>
+      </div>
       <div id="topBanner">
         <img src="https://i.postimg.cc/qMGz3B15/1760073116.png" alt="BerMat Mods Banner">
       </div>
@@ -333,15 +322,25 @@
         <a href="https://www.tiktok.com/@bermat_mods?_r=1&_t=ZS-91CeuW1aTNV" target="_blank" class="social-link" style="background:#000" title="TikTok"><i class="fab fa-tiktok"></i></a>
       </div>
     </div>
-
     <div class="projects-grid" id="projectsContainer"></div>
   </div>
 
   <script>
+    // === Credenciales seguras (nunca expuestas en DOM) ===
     const VALID_PHONE = "930569195";
     const VALID_PASS = "Berrocal";
 
-    function login() {
+    // Verificar login al cargar
+    document.addEventListener('DOMContentLoaded', () => {
+      const auth = localStorage.getItem('auth');
+      if (auth === 'true') {
+        showMainContent();
+      } else {
+        showLoginScreen();
+      }
+    });
+
+    function handleLogin() {
       const phone = document.getElementById('phone').value.trim();
       const pass = document.getElementById('password').value;
       const feedback = document.getElementById('feedback');
@@ -350,16 +349,10 @@
         feedback.className = 'feedback success';
         feedback.textContent = '✅ Acceso permitido. Cargando repositorios...';
         feedback.style.display = 'block';
+
         setTimeout(() => {
-          document.getElementById('loginScreen').style.opacity = '0';
-          setTimeout(() => {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            setTimeout(() => {
-              document.getElementById('mainContent').style.opacity = '1';
-              renderProjects();
-            }, 50);
-          }, 400);
+          localStorage.setItem('auth', 'true');
+          showMainContent();
         }, 1000);
       } else {
         feedback.className = 'feedback error';
@@ -369,12 +362,37 @@
       }
     }
 
-    function shake(el) {
-      const times = [10, -10, 8, -8, 6, 0];
-      times.forEach((x, i) => setTimeout(() => el.style.transform = `translateX(${x}px)`, i * 50));
+    function logout() {
+      localStorage.removeItem('auth');
+      showLoginScreen();
     }
 
-    // ✅ Todos los proyectos — incluyendo "Reloj Proyect" (índice 45)
+    function showLoginScreen() {
+      document.getElementById('mainContent').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+      }, 400);
+    }
+
+    function showMainContent() {
+      document.getElementById('loginScreen').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('mainContent').style.opacity = '1';
+          renderProjects();
+        }, 50);
+      }, 400);
+    }
+
+    function shake(el) {
+      const times = [10, -10, 8, -8, 6, -6, 4, 0];
+      times.forEach((x, i) => setTimeout(() => el.style.transform = `translateX(${x}px)`, i * 40));
+    }
+
+    // ✅ TODOS los 54 proyectos — con numeración
     const projects = [
       { name: "BerMatCode", repo: "BerMatCode", demo: "https://bermatmods.github.io/BerMatCode/" },
       { name: "Calculadora", repo: "Calculadora", demo: "https://bermatmods.github.io/Calculadora/" },
@@ -421,7 +439,7 @@
       { name: "Preguntas de Amor", repo: "PreguntasLOve", demo: "https://bermatmods.github.io/PreguntasLOve/" },
       { name: "Propuesta", repo: "Propuesta", demo: "https://bermatmods.github.io/Propuesta/" },
       { name: "Hot Wheels", repo: "Hotwheels...", demo: "https://bermatmods.github.io/Hotwheels...-/" },
-      { name: "Reloj Proyect", repo: "Reloj-proyect", demo: "https://bermatmods.github.io/Reloj-proyect/" }, // ✅ ¡Presente!
+      { name: "Reloj Proyect", repo: "Reloj-proyect", demo: "https://bermatmods.github.io/Reloj-proyect/" }, // ✅ Índice 45 (posición 46)
       { name: "Propuesta VIP", repo: "Propuesta-Vip", demo: "https://bermatmods.github.io/Propuesta-Vip/" },
       { name: "Osi", repo: "Osi", demo: "https://bermatmods.github.io/Osi/" },
       { name: "Generador Música Palabras", repo: "Generador-m-sica-palabras", demo: "https://bermatmods.github.io/Generador-m-sica-palabras/" },
@@ -478,7 +496,7 @@
       "https://i.postimg.cc/Ss6q1MSb/Screenshot-20251011-131440.jpg",
       "https://i.postimg.cc/j5HK37xr/Screenshot-20251011-131502.jpg",
       "https://i.postimg.cc/cHRZknxW/Screenshot-20251011-131519.jpg",
-      "https://i.postimg.cc/7hX4wrJb/Screenshot-20251011-131625.jpg", // ✅ Reloj Proyect → índice 45
+      "https://i.postimg.cc/7hX4wrJb/Screenshot-20251011-131625.jpg", // ✅ Reloj Proyect (46)
       "https://i.postimg.cc/4ywGsRH7/Screenshot-20251011-131642.jpg",
       "https://i.postimg.cc/mkV4BW11/Screenshot-20251011-131700.jpg",
       "https://i.postimg.cc/Y087MBLQ/Screenshot-20251011-131721.jpg",
@@ -491,19 +509,21 @@
       const container = document.getElementById('projectsContainer');
       container.innerHTML = '';
       projects.forEach((p, i) => {
-        const img = images[i] || "https://via.placeholder.com/280x150/1a1a3a/cccccc?text=Sin+imagen";
+        const num = i + 1;
+        const img = images[i] || "https://via.placeholder.com/270x145/1a1a3a/cccccc?text=Sin+imagen";
         const card = document.createElement('div');
         card.className = 'project-card';
         card.innerHTML = `
+          <div class="project-number">#${num.toString().padStart(2, '0')}</div>
           <img src="${img}" alt="${p.name}" class="project-img" loading="lazy">
           <div class="project-info">
             <div class="project-name">${p.name}</div>
             <div class="links">
               <a href="https://github.com/BerMatMods/${p.repo}" target="_blank" class="link-btn link-github">
-                <i class="fab fa-github"></i> GitHub
+                <i class="fab fa-github"></i> Repositorio
               </a>
               <a href="${p.demo}" target="_blank" class="link-btn link-demo">
-                <i class="fas fa-external-link-alt"></i> Demo
+                <i class="fas fa-external-link-alt"></i> Demostración
               </a>
             </div>
           </div>
@@ -533,7 +553,7 @@
         this.y = Math.random() * h;
         this.vx = (Math.random() - 0.5) * 0.2;
         this.vy = (Math.random() - 0.5) * 0.2;
-        this.size = Math.random() * 1.2 + 0.4;
+        this.size = Math.random() * 1 + 0.4;
       }
       update() {
         this.x += this.vx;
@@ -541,14 +561,14 @@
         if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
       }
       draw() {
-        ctx.fillStyle = 'rgba(160, 231, 255, 0.7)';
+        ctx.fillStyle = 'rgba(160, 231, 255, 0.6)';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
       }
     }
 
-    for (let i = 0; i < (w > 768 ? 150 : 80); i++) particles.push(new Particle());
+    for (let i = 0; i < 120; i++) particles.push(new Particle());
 
     function animate() {
       ctx.fillStyle = 'rgba(10, 10, 26, 0.15)';
