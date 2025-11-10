@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>🔐 AnthZz Berrocal — Acceso Restringido</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --glow: 0 0 12px rgba(138, 43, 226, 0.7);
+      --neon: #8A2BE2;
+      --bg-dark: #0a0a1a;
+      --card-bg: rgba(15, 20, 45, 0.75);
+    }
+    body {
+      background: var(--bg-dark);
+      color: #e0e8ff;
+      font-family: 'Quicksand', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      position: relative;
+    }
+    canvas { position: fixed; top: 0; left: 0; z-index: -2; }
+    #loginScreen {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 0 15px;
+      text-align: center;
+    }
+    .typing {
+      font-family: 'Pacifico', cursive;
+      font-size: 2.1rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #a0e7ff, #ffffff, #ffd700);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 14px rgba(160, 231, 255, 0.5);
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid #a0e7ff;
+      animation: typing 4.5s steps(32), blink 0.8s step-end infinite;
+    }
+    @keyframes typing {
+      0% { width: 0; }
+      100% { width: 100%; }
+    }
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+    .subtitle {
+      font-size: 1.05rem;
+      max-width: 480px;
+      margin: 0 auto 28px;
+      color: #aaa;
+      line-height: 1.6;
+    }
+    .login-box {
+      background: rgba(12, 18, 40, 0.65);
+      border-radius: 22px;
+      padding: 26px;
+      width: 100%;
+      max-width: 380px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(100, 150, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), var(--glow);
+      position: relative;
+      z-index: 2;
+    }
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+    .input-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      color: #d0e1ff;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 12px;
+      border: 1px solid #3a3a5a;
+      background: rgba(20, 25, 55, 0.6);
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .input-group input:focus {
+      border-color: var(--neon);
+      box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+    }
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #3a1a7d, #5c26b0, #8A2BE2);
+      color: white;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 8px rgba(138, 43, 226, 0.3);
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5), 0 0 14px rgba(138, 43, 226, 0.5);
+    }
+    .feedback {
+      margin-top: 16px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      display: none;
+    }
+    .feedback.error {
+      background: rgba(220, 50, 50, 0.15);
+      color: #ff9e9e;
+      border: 1px solid #442222;
+    }
+    .feedback.success {
+      background: rgba(40, 180, 80, 0.15);
+      color: #a0ffcc;
+      border: 1px solid #225522;
+    }
+    .decoration {
+      position: absolute;
+      z-index: 0;
+    }
+    .deco-1 {
+      top: 15%; left: 5%; width: 60px; height: 60px;
+      border: 2px solid #8A2BE2;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #8A2BE2;
+      animation: pulse 3s infinite;
+    }
+    .deco-2 {
+      bottom: 20%; right: 8%; width: 40px; height: 40px;
+      background: rgba(255, 215, 0, 0.2);
+      border-radius: 50%;
+      box-shadow: 0 0 16px #ffd700;
+      animation: float 5s ease-in-out infinite;
+    }
+    .deco-3 {
+      top: 40%; right: 12%; width: 20px; height: 20px;
+      background: #a0e7ff;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #a0e7ff;
+      animation: blink 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 0.3; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    #mainContent {
+      display: none;
+      opacity: 0;
+      height: 100%;
+      overflow-y: auto;
+      transition: opacity 0.5s ease;
+    }
+    .header {
+      text-align: center;
+      padding: 20px 15px 15px;
+    }
+    #topBanner {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 18px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+    #topBanner img {
+      width: 100%;
+      display: block;
+    }
+    .credits {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.2rem;
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+      margin-top: 6px;
+    }
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 14px 0;
+      flex-wrap: wrap;
+    }
+    .social-link {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    }
+    .social-link:hover { transform: translateY(-3px) scale(1.08); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px;
+      padding: 0 20px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .project-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(100, 150, 255, 0.15);
+      transition: all 0.3s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(138, 43, 226, 0.3);
+    }
+    .project-img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    .project-info {
+      padding: 16px;
+    }
+    .project-name {
+      font-size: 1.15rem;
+      color: #e0f0ff;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .links {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .link-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s;
+      font-size: 0.93rem;
+    }
+    .link-github {
+      background: linear-gradient(to right, #222, #333);
+      color: #fff;
+    }
+    .link-demo {
+      background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+      color: white;
+    }
+    @media (max-width: 500px) {
+      .typing { font-size: 1.7rem; }
+      .login-box { padding: 22px; max-width: 320px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-img { height: 130px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="particles"></canvas>
+
+  <!-- Decoraciones estáticas -->
+  <div class="decoration deco-1"></div>
+  <div class="decoration deco-2"></div>
+  <div class="decoration deco-3"></div>
+
+  <div id="loginScreen">
+    <div class="typing">✯Códigos Para descargar✯</div>
+    <p class="subtitle">Acceso exclusivo para administradores. Verificación de identidad requerida para gestionar repositorios y demos oficiales.</p>
+    
+    <div class="login-box">
+      <div class="input-group">
+        <label for="phone"><i class="fas fa-mobile-alt"></i> Celular (Perú)</label>
+        <input type="tel" id="phone" placeholder="Ejm: 987654321" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="off">
+      </div>
+      <button class="btn-login" onclick="login()">🔐 Iniciar Sesión</button>
+      <div id="feedback" class="feedback"></div>
+    </div>
+  </div>
+
+  <div id="mainContent">
+    <div class="header">
+      <div id="topBanner">
+        <img src="https://i.postimg.cc/qMGz3B15/1760073116.png" alt="BerMat Mods Banner">
+      </div>
+      <div class="credits">By 𖤍BerMat_Code𖤍 • AnthZz Berrocal</div>
+      <div class="socials">
+        <a href="https://wa.me/51930569195" target="_blank" class="social-link" style="background:#25D366" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://www.instagram.com/anthz_berrocal?igsh=MXFvamljcnN2bzJkbg==" target="_blank" class="social-link" style="background:#E1306C" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.facebook.com/share/1AYGVF9ZKn/" target="_blank" class="social-link" style="background:#1877F2" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://youtube.com/@anthzz_berrocal" target="_blank" class="social-link" style="background:#FF0000" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://t.me/BerMatMods" target="_blank" class="social-link" style="background:#0088CC" title="Telegram"><i class="fab fa-telegram"></i></a>
+        <a href="https://www.tiktok.com/@bermat_mods?_r=1&_t=ZS-91CeuW1aTNV" target="_blank" class="social-link" style="background:#000" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+
+    <div class="projects-grid" id="projectsContainer"></div>
+  </div>
+
+  <script>
+    const VALID_PHONE = "930569195";
+    const VALID_PASS = "Berrocal";
+
+    function login() {
+      const phone = document.getElementById('phone').value.trim();
+      const pass = document.getElementById('password').value;
+      const feedback = document.getElementById('feedback');
+
+      if (phone === VALID_PHONE && pass === VALID_PASS) {
+        feedback.className = 'feedback success';
+        feedback.textContent = '✅ Acceso permitido. Cargando repositorios...';
+        feedback.style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('loginScreen').style.opacity = '0';
+          setTimeout(() => {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            setTimeout(() => {
+              document.getElementById('mainContent').style.opacity = '1';
+              renderProjects();
+            }, 50);
+          }, 400);
+        }, 1000);
+      } else {
+        feedback.className = 'feedback error';
+        feedback.textContent = '❌ Número o contraseña incorrectos. Acceso denegado.';
+        feedback.style.display = 'block';
+        shake(document.querySelector('.login-box'));
+      }
+    }
+
+    function shake(el) {
+      const times = [10, -10, 8, -8, 6, 0];
+      times.forEach((x, i) => setTimeout(() => el.style.transform = `translateX(${x}px)`, i * 50));
+    }
+
+    // ✅ Todos los proyectos — incluyendo "Reloj Proyect" (índice 45)
+    const projects = [
+      { name: "BerMatCode", repo: "BerMatCode", demo: "https://bermatmods.github.io/BerMatCode/" },
+      { name: "Calculadora", repo: "Calculadora", demo: "https://bermatmods.github.io/Calculadora/" },
+      { name: "Para Mi Amor", repo: "Dispa-carta-love-", demo: "https://bermatmods.github.io/Dispa-carta-love-/" },
+      { name: "Text", repo: "Text", demo: "https://bermatmods.github.io/Text/" },
+      { name: "Spider-Man", repo: "Spider-Man", demo: "https://bermatmods.github.io/Spider-Man/" },
+      { name: "Carta en Halloween de Amor", repo: "Carta-en-Halloween-de-amor", demo: "https://bermatmods.github.io/Carta-en-Halloween-de-amor/" },
+      { name: "Llegaste Tú", repo: "Ll-gaste-tu", demo: "https://bermatmods.github.io/Ll-gaste-tu/" },
+      { name: "Perdón (HTML)", repo: "Perd-n-HTML-", demo: "https://bermatmods.github.io/Perd-n-HTML-/" },
+      { name: "2 Galaxias: Choque Romántico", repo: "2-Galaxias-Choque-Romantico", demo: "https://bermatmods.github.io/2-Galaxias-Choque-Romantico/" },
+      { name: "¿Me perdonas mi Amor?", repo: "Perd-n-", demo: "https://bermatmods.github.io/Perd-n-/" },
+      { name: "Mi Enojona", repo: "Mi-Enojona", demo: "https://bermatmods.github.io/Mi-Enojona/" },
+      { name: "Flower", repo: "Flower", demo: "https://bermatmods.github.io/Flower/" },
+      { name: "Flo Cora Gala", repo: "Flo-cora-gala", demo: "https://bermatmods.github.io/Flo-cora-gala/" },
+      { name: "Galaxdxdxd", repo: "Galaxdxdxd", demo: "https://bermatmods.github.io/Galaxdxdxd/" },
+      { name: "Partícula Corazón Explosión", repo: "Part-cula-coraz-n-explosi-n-", demo: "https://bermatmods.github.io/Part-cula-coraz-n-explosi-n-/" },
+      { name: "¿Quieres ser mi novia?", repo: "O-O", demo: "https://bermatmods.github.io/O-O/" },
+      { name: "Flores Moradas", repo: "Flores-moradas-BerMatMods-", demo: "https://bermatmods.github.io/Flores-moradas-BerMatMods-/" },
+      { name: "Fuegos Artificiales", repo: "Fuegos-Artificiales-", demo: "https://bermatmods.github.io/Fuegos-Artificiales-/" },
+      { name: "Aplastar", repo: "Aplastar", demo: "https://bermatmods.github.io/Aplastar/" },
+      { name: "Triangular Espacio", repo: "TriangularEspacio", demo: "https://bermatmods.github.io/TriangularEspacio/" },
+      { name: "Perdóname", repo: "Perdoname", demo: "https://bermatmods.github.io/Perdoname/" },
+      { name: "TraduMor", repo: "TraduMor", demo: "https://bermatmods.github.io/TraduMor/" },
+      { name: "Hexagonal", repo: "Hexagonal", demo: "https://bermatmods.github.io/Hexagonal/" },
+      { name: "Cumple", repo: "Cumple", demo: "https://bermatmods.github.io/Cumple/" },
+      { name: "BerMatMods", repo: "BerMatMods-", demo: "https://bermatmods.github.io/BerMatMods-/" },
+      { name: "Cora", repo: "Cora", demo: "https://bermatmods.github.io/Cora/" },
+      { name: "MiniGalaxia", repo: "Generador-de-MiniGalaxia", demo: "https://bermatmods.github.io/Generador-de-MiniGalaxia/" },
+      { name: "Dedica", repo: "Dedica", demo: "https://bermatmods.github.io/Dedica/" },
+      { name: "Caja y Carta", repo: "CajaYCarta", demo: "https://bermatmods.github.io/CajaYCarta/" },
+      { name: "Carta para tod@s", repo: "Carta-para-tod-s", demo: "https://bermatmods.github.io/Carta-para-tod-s/" },
+      { name: "Corazón Cielo", repo: "Coraz-n-cielo-", demo: "https://bermatmods.github.io/Coraz-n-cielo-/" },
+      { name: "Game", repo: "Game", demo: "https://bermatmods.github.io/Game/" },
+      { name: "Osito", repo: "Osito", demo: "https://bermatmods.github.io/Osito/" },
+      { name: "Partículas", repo: "Part-culas", demo: "https://bermatmods.github.io/Part-culas/" },
+      { name: "FaceAmor", repo: "FaceAmor", demo: "https://bermatmods.github.io/FaceAmor/" },
+      { name: "100 Promesas", repo: "100Promesas", demo: "https://bermatmods.github.io/100Promesas/" },
+      { name: "Carta Fuente", repo: "Carta-fuente-", demo: "https://bermatmods.github.io/Carta-fuente-/" },
+      { name: "Flores Amarillas 2", repo: "Flores-Amarillas-2-", demo: "https://bermatmods.github.io/Flores-Amarillas-2-/" },
+      { name: "Corazones", repo: "Corazones", demo: "https://bermatmods.github.io/Corazones/" },
+      { name: "Calabaza Halloween", repo: "Calabaza-halloween", demo: "https://bermatmods.github.io/Calabaza-halloween/" },
+      { name: "Cubo neón", repo: "Cubo-ne-n-", demo: "https://bermatmods.github.io/Cubo-ne-n-/" },
+      { name: "Estelar de Amor", repo: "Estelar-de-amor-", demo: "https://bermatmods.github.io/Estelar-de-amor-/" },
+      { name: "Preguntas de Amor", repo: "PreguntasLOve", demo: "https://bermatmods.github.io/PreguntasLOve/" },
+      { name: "Propuesta", repo: "Propuesta", demo: "https://bermatmods.github.io/Propuesta/" },
+      { name: "Hot Wheels", repo: "Hotwheels...", demo: "https://bermatmods.github.io/Hotwheels...-/" },
+      { name: "Reloj Proyect", repo: "Reloj-proyect", demo: "https://bermatmods.github.io/Reloj-proyect/" }, // ✅ ¡Presente!
+      { name: "Propuesta VIP", repo: "Propuesta-Vip", demo: "https://bermatmods.github.io/Propuesta-Vip/" },
+      { name: "Osi", repo: "Osi", demo: "https://bermatmods.github.io/Osi/" },
+      { name: "Generador Música Palabras", repo: "Generador-m-sica-palabras", demo: "https://bermatmods.github.io/Generador-m-sica-palabras/" },
+      { name: "Galaxia Curva Neón", repo: "Galaxia-curva-neon", demo: "https://bermatmods.github.io/Galaxia-curva-neon/" },
+      { name: "Galaxia de Amor", repo: "Galaxia-de-amor-", demo: "https://bermatmods.github.io/Galaxia-de-amor-/" },
+      { name: "Galaxia con Frases", repo: "Galaxia-con-freses-", demo: "https://bermatmods.github.io/Galaxia-con-freses-/" },
+      { name: "Hello-kitty Con frase", repo: "Hello-kitty", demo: "https://bermatmods.github.io/Hello-kitty/" }
+    ];
+
+    const images = [
+      "https://i.postimg.cc/VLDz0dPq/Screenshot-20251023-135147.jpg",
+      "https://i.postimg.cc/LsWSCfQr/Screenshot-20251023-131400.jpg",
+      "https://i.postimg.cc/hGYnyxZk/Screenshot-20251023-131416.jpg",
+      "https://i.postimg.cc/MGLwPRrw/Screenshot-20251023-131522.jpg",
+      "https://i.postimg.cc/bv5PCbFh/Screenshot-20251023-131543.jpg",
+      "https://i.postimg.cc/QtW3RtRD/Screenshot-20251023-131604.jpg",
+      "https://i.postimg.cc/RFnBjFjC/Screenshot-20251023-131623.jpg",
+      "https://i.postimg.cc/tTVjLTLq/Screenshot-20251023-131645.jpg",
+      "https://i.postimg.cc/j5JbG5Gs/Screenshot-20251023-131707.jpg",
+      "https://i.postimg.cc/FRJ42R2f/Screenshot-20251023-131730.jpg",
+      "https://i.postimg.cc/d1TYz1zT/Screenshot-20251023-131800.jpg",
+      "https://i.postimg.cc/DZbTtZtX/Screenshot-20251023-131820.jpg",
+      "https://i.postimg.cc/SRFhq4hR/Screenshot-20251023-131854.jpg",
+      "https://i.postimg.cc/5yLfF0gb/Screenshot-20251023-131908.jpg",
+      "https://i.postimg.cc/6qBQcJSW/Screenshot-20251010-202834.jpg",
+      "https://i.postimg.cc/PJK5FVst/Screenshot-20251010-202919.jpg",
+      "https://i.postimg.cc/C5Jx6rT0/Screenshot-20251010-202949.jpg",
+      "https://i.postimg.cc/2yTSX9Ry/Screenshot-20251010-203018.jpg",
+      "https://i.postimg.cc/6qzp1bJw/Screenshot-20251010-203039.jpg",
+      "https://i.postimg.cc/gj42BtFr/Screenshot-20251010-203108.jpg",
+      "https://i.postimg.cc/rsgwYZXK/Screenshot-20251010-203131.jpg",
+      "https://i.postimg.cc/kGwghY32/Screenshot-20251010-203155.jpg",
+      "https://i.postimg.cc/wMFjb48s/Screenshot-20251010-203224.jpg",
+      "https://i.postimg.cc/0jZyHXRw/Screenshot-20251010-203416.jpg",
+      "https://i.postimg.cc/FzGHnC5c/Screenshot-20251010-203454.jpg",
+      "https://i.postimg.cc/cCTL5ky7/Screenshot-20251010-203537.jpg",
+      "https://i.postimg.cc/h40vjvJy/Screenshot-20251010-203554.jpg",
+      "https://i.postimg.cc/2jxy6yqK/Screenshot-20251010-203610.jpg",
+      "https://i.postimg.cc/9XB0M0R5/Screenshot-20251010-203712.jpg",
+      "https://i.postimg.cc/05CjQjMP/Screenshot-20251010-203728.jpg",
+      "https://i.postimg.cc/y6TxdxgB/Screenshot-20251010-203753.jpg",
+      "https://i.postimg.cc/mZSkDkzT/Screenshot-20251010-203806.jpg",
+      "https://i.postimg.cc/qBGqRqhk/Screenshot-20251010-203821.jpg",
+      "https://i.postimg.cc/pVBrTrhW/Screenshot-20251010-203858.jpg",
+      "https://i.postimg.cc/QNqCtC9x/Screenshot-20251010-203935.jpg",
+      "https://i.postimg.cc/NGxFMF90/Screenshot-20251010-204000.jpg",
+      "https://i.postimg.cc/CM4515B5/Screenshot-20251010-204047.jpg",
+      "https://i.postimg.cc/Y2x090Gj/Screenshot-20251010-204111.jpg",
+      "https://i.postimg.cc/JnVMQqWB/Screenshot-20251011-131253.jpg",
+      "https://i.postimg.cc/xCvYpz0s/Screenshot-20251011-131304.jpg",
+      "https://i.postimg.cc/763Dt2xV/Screenshot-20251011-131323.jpg",
+      "https://i.postimg.cc/B6Ts7Kq7/Screenshot-20251011-131403.jpg",
+      "https://i.postimg.cc/k4Q9Ybn1/Screenshot-20251011-131422.jpg",
+      "https://i.postimg.cc/Ss6q1MSb/Screenshot-20251011-131440.jpg",
+      "https://i.postimg.cc/j5HK37xr/Screenshot-20251011-131502.jpg",
+      "https://i.postimg.cc/cHRZknxW/Screenshot-20251011-131519.jpg",
+      "https://i.postimg.cc/7hX4wrJb/Screenshot-20251011-131625.jpg", // ✅ Reloj Proyect → índice 45
+      "https://i.postimg.cc/4ywGsRH7/Screenshot-20251011-131642.jpg",
+      "https://i.postimg.cc/mkV4BW11/Screenshot-20251011-131700.jpg",
+      "https://i.postimg.cc/Y087MBLQ/Screenshot-20251011-131721.jpg",
+      "https://i.postimg.cc/SRV4kbYd/Screenshot-20251011-131752.jpg",
+      "https://i.postimg.cc/prkvRM5G/Screenshot-20251011-131812.jpg",
+      "https://i.postimg.cc/vTRT4HGb/Screenshot-20251016-203433.jpg"
+    ];
+
+    function renderProjects() {
+      const container = document.getElementById('projectsContainer');
+      container.innerHTML = '';
+      projects.forEach((p, i) => {
+        const img = images[i] || "https://via.placeholder.com/280x150/1a1a3a/cccccc?text=Sin+imagen";
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.innerHTML = `
+          <img src="${img}" alt="${p.name}" class="project-img" loading="lazy">
+          <div class="project-info">
+            <div class="project-name">${p.name}</div>
+            <div class="links">
+              <a href="https://github.com/BerMatMods/${p.repo}" target="_blank" class="link-btn link-github">
+                <i class="fab fa-github"></i> GitHub
+              </a>
+              <a href="${p.demo}" target="_blank" class="link-btn link-demo">
+                <i class="fas fa-external-link-alt"></i> Demo
+              </a>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // === Partículas sutiles de fondo ===
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let w, h, particles = [];
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * w;
+        this.y = Math.random() * h;
+        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = (Math.random() - 0.5) * 0.2;
+        this.size = Math.random() * 1.2 + 0.4;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+      }
+      draw() {
+        ctx.fillStyle = 'rgba(160, 231, 255, 0.7)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < (w > 768 ? 150 : 80); i++) particles.push(new Particle());
+
+    function animate() {
+      ctx.fillStyle = 'rgba(10, 10, 26, 0.15)';
+      ctx.fillRect(0, 0, w, h);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+
+</body>
+</html>
